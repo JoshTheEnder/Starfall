@@ -1,0 +1,190 @@
+--@Name ChatDialer V2
+--@Author TAJG
+--@include lib/chatcmd.txt
+require("lib/chatcmd.txt")
+--[[
+    ###################################################################################
+    ##THIS CHIP NEEDS PERSON8880'S EASY CHAT COMMAND LIBRARY,                        ##
+    ##Get it from http://www.teamscm.co.uk/index.php?/topic/237-chat-command-library ##
+    ###################################################################################
+
+    Wire the Stargate, Iris, and IrisComputer WireLinks to their respective counterparts
+   
+]]--
+
+-- a quick way to edit what the bot says
+DialOut = "I will begin the dialling sequence to %s immediately, %s!" --the first %s will be replaced with the address being told to dial, the second with the owners name
+IrisClose = "Understood master! Closing the Iris!" -- this isn't used at the moment
+IrisOpen = "Understood master! Opening the Iris!" -- this isn't used at the moment
+InboundConnection = "Master, there is an inbound wormhole from %s"
+FreindVerified = "%s's Iris code received, opening the Iris!"
+GateCloseT = "Understood master, closing the gate!"
+
+
+IDCs = {
+    "1111",
+    "2222"
+} 
+-- add more IDCs here
+IDCName = {
+    "ChangeTheIDC!",
+    "ChangeTheIDC!"
+} 
+--[[
+    Add the names of the corresponding IDC's owners, 
+    they must be in the same order as the IDC's (otherwise it'll be confusing),
+    they don't have to be their exact names, just nicknames :)
+]]--
+
+Users = {
+    " "
+}
+--[[ 
+    Add people who you want to give access to the chat commands to here
+    I'm here mainly for debugging purposes, when this version gets pushed to stable then i'll remove it.
+]]
+
+WireLib = loadLibrary("wire")
+ChatLib = loadLibrary("chat")
+EntityLib = loadLibrary("ents")
+TimeLib = loadLibrary("time")
+
+WireLib.createInputs({"Stargate","Iris","IrisComputer"},{"wirelink","wirelink","wirelink"})
+Stargate = WireLib.ports.Stargate
+WIris = WireLib.ports.Iris
+IrisComputer = WireLib.ports.IrisComputer
+Owner = EntityLib.owner()
+OwnerName = Owner:name()
+BotName = "Computer" -- CHANGE THIS TO CHANGE THE BOT'S NAME
+i = 1
+
+
+function GateStatus() 
+    if Stargate.Active == 1 then
+        Active = true
+    else 
+        Active = false
+    end
+    if Stargate.Open == 1 then
+        Open = true
+    else 
+        Open = false
+    end
+    if Stargate.Inbound == 1 then
+        Inbound = true
+    else 
+        Inbound = false
+    end
+    if WIris.Activated == 1 then
+        Iris = true
+    else 
+        Iris = false
+    end
+end
+
+function GateClose()
+    Stargate.Close = 1
+    TimeLib.stimer(0.1, function()
+        Stargate.Close = 0
+    end)
+end
+
+function Dial(Params)
+    Stargate["Dial String"] = Params
+    Stargate["Dial Mode"] = 1
+    Stargate["Start String Dial"] = 1
+    TimeLib.stimer(0.1, function()
+        Stargate["Start String Dial"] = 0
+    end)
+    WIris.Activate = 0
+    --[[
+        TO BE IMPLIMENTED LATER!
+        if Mode == ("slow" or "0") then
+            Stargate["Dial Mode"] = 0
+        elseif Mode == ("nox" or "2") then
+            Stargate["Dial Mode"] = 2
+        else Stargate["Dial Mode"] = 1
+        end
+    ]]
+end
+
+function StargateController( CallingPly, Command, Params )
+    if CallingPly == Owner then 
+    OwnerChat = true
+    end
+    for i = 1, #Users do
+        CallerName = CallingPly:name()
+        if CallerName ==  Users[ i ] or OwnerChat then
+            if Command == "dial" then
+                if not Active then
+                    ChatLib.botSay(BotName,DialOut:format(Params, CallerName))
+                    Dial(Params)
+                elseif Active then
+                    ChatLib.botSay( BotName, string.format( "The gate is currently active %s, dialling is not possible at this time", CallerName))
+                end
+            elseif Command == "close" and Params == "the gate" then
+                ChatLib.botSay(BotName, GateCloseT)
+                GateClose()
+                TimeLib.stimer(3, function()
+                    if Active then
+                        ChatLib.botSay(BotName, string.format("I am having trouble closing the gate %s!", CallerName))
+                    else
+                        ChatLib.botSay(BotName, string.format("The gate is closed %s", CallerName))
+                    end
+                end)
+            elseif Command == "is" then
+                if Params == "the gate open?" then
+                    if Open then
+                        ChatLib.botSay(BotName,"The gate is open!")
+                    elseif not Open then
+                        ChatLib.botSay(BotName,"The gate is closed")
+                    end
+                elseif Params == "the iris open?" then
+                    if Iris then
+                        ChatLib.botSay(BotName,"The Iris is closed!")
+                    elseif not Iris then
+                        ChatLib.botSay(BotName,"The Iris is open!")
+                    end                    
+                end  
+            else 
+                ChatLib.botSay(BotName, "What was that?")
+            end
+        end
+    end
+end
+
+SGC = ChatCMD:Register( "Computer", StargateController )
+SGC:AddParam{ Type = "string" }
+SGC:AddParam{ Type = "string", TakeRestOfLine = true }
+
+    
+hook("think","Doing stuff :)",function()
+    GateStatus()
+    if Active and Open and Inbound and not Said then
+        ChatLib.botSay(BotName, InboundConnection:format( Stargate["Dialing Address"] ) )
+        Said = true
+    end
+    if Active == false then
+        Said = false
+        Verified = false
+    end
+
+    if Inbound then
+        if not Verified then
+        IDCCode = string.format("%i", IrisComputer["Received Code"] )
+            for i = 1, #IDCs do
+                if IDCCode ==  IDCs[ i ] then
+                    IrisComputer["GDO Status"] = 1
+                    IrisComputer["GDO Text"] = "Open"
+                    ChatLib.botSay(BotName, FreindVerified:format( IDCName[ i ] ) )
+                    WIris.Activate = 0
+                    Verified = true
+                    break
+                else
+                    IrisComputer["GDO Status"] = 0
+                    WIris.Activate = 1
+                end
+            end
+        end
+    end
+end)
