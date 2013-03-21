@@ -4,6 +4,7 @@
 local WireLib = loadLibrary("wire")
 local ChatLib = loadLibrary("chat")
 local EntityLib = loadLibrary("ents")
+local Owner = ents:owner()
 
 WireLib.createInputs({"ResourceCache","LSCore","WaterSplitter","WaterPump"},{"wirelink","wirelink","wirelink","wirelink"})
 CA = WireLib.ports.ResourceCache
@@ -51,30 +52,25 @@ function ResourceAmmountGet(resource)
 end
 
 function RDStatus()
-	if O2 <= 15 and > 5 then
-		print(string.format("You are running low on oxygen, you have %i percent left", O2))
-	elseif O2 <= 5 and > 0 then
-		print(string.format("You are running out of oxygen, you have %i percent left", O2))
-	elseif O2 == 0 then
-		print("You are out of oxygen")
-	else print("Oxygen is OK!")
+	if O2 > 15 then
+		Oxygen = "OK"
+	elseif O2 < 15 then
+		Oxygen = "BAD"
 	end
-	if PWR <= 15 and > 5 then
-		print(string.format("You are running low on power, you have %i percent left", PWR))
-	elseif PWR <= 5 and > 0 then
-		print(string.format("You are running out of power, you have %i percent left", PWR))
-	elseif PWR == 0 then
-		print("You are out of power")
-	else print("Oxygen is OK!")
+	if PWR > 15 then
+		Power = "OK"
+	elseif PWR < 15 then
+		Power = "BAD"
 	end
-	if WTR <= 15 and > 5 then
-		print(string.format("You are running low on water, you have %i percent left", WTR))
-	elseif WTR <= 5 and > 0 then
-		print(string.format("You are running out of water, you have %i percent left", WTR))
-	elseif WTR == 0 then
-		print("You are out of water")
-	else print("Oxygen is OK!")
+	if WTR > 15 then
+		Water = "OK"
+	elseif WTR < 15 then
+		Water = "BAD"
 	end
+	print(string.format("Oxygen: %s",Oxygen))
+	print(string.format("Power: %s",Power))
+	print(string.format("Water: %s",Water))
+end
 
 
 -- Loading of moduals for hooking
@@ -89,3 +85,13 @@ if RD = true then
 		WTR = ResourceAmmountGet("Water")
 		
 end 
+
+local function ParseChat( Message, Player )
+	Command = Message:sub(1, 5)
+	Params = Message:sub(6)
+	if Command:lower() == "/resources" then
+		RDStatus( Params )
+	end
+end
+
+ChatLib.listen( ParseChat, Owner )
