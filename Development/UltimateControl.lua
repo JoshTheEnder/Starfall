@@ -4,7 +4,7 @@
 local WireLib = loadLibrary("wire")
 local ChatLib = loadLibrary("chat")
 local EntityLib = loadLibrary("ents")
-local Owner = ents:owner()
+local Owner = EntityLib:owner()
 
 WireLib.createInputs({"ResourceCache","LSCore","WaterSplitter","WaterPump"},{"wirelink","wirelink","wirelink","wirelink"})
 CA = WireLib.ports.ResourceCache

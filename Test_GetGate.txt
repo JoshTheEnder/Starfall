@@ -1,0 +1,20 @@
+--@name Stargate Stuff
+--@author TAJG
+
+local SGLib = loadLibrary( "stargate" )
+local WireLib = loadLibrary( "wire" )
+local TimeLib = loadLibrary( "time" )
+local EntityLib = loadLibrary( "ents" )
+
+WireLib.createInputs({"Stargate","IrisComputer"},{"wirelink","wirelink"})
+assert( wire.ports.Stargate and wire.ports.Stargate:IsValid(), "You haven't wired the Stargate." )
+MrSG = WireLib.ports.Stargate:entity()
+MrIris = SGLib.iris(MrSG)
+SGs = SGLib.getAllStargates()
+
+
+function getGateList()
+    for i = 1, #SGs do
+        if SGLib.group(SGs[i]) == SGLib.group(MrSG) then
+            print( string.format( "Local: A:%s, N:%s", SGLib.address(SGs[i]), SGLib.name(SGs[i]) ) )
+        
