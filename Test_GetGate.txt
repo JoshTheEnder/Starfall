@@ -6,15 +6,59 @@ local WireLib = loadLibrary( "wire" )
 local TimeLib = loadLibrary( "time" )
 local EntityLib = loadLibrary( "ents" )
 
-WireLib.createInputs({"Stargate","IrisComputer"},{"wirelink","wirelink"})
-assert( wire.ports.Stargate and wire.ports.Stargate:IsValid(), "You haven't wired the Stargate." )
-MrSG = WireLib.ports.Stargate:entity()
-MrIris = SGLib.iris(MrSG)
+WireLib.createInputs({"Stargate","IrisComputer","GetInfo"},{"wirelink","wirelink","normal"})
+--assert( WireLib.ports.Stargate and WireLib.ports.Stargate:isValid(), "You haven't wired the Stargate." )
+
+--MrSGW = WireLib.ports.Stargate:entity()
+
 SGs = SGLib.getAllStargates()
+MrSG = SGs[7]
+MrIris = SGLib.iris(MrSG)
 
 
-function getGateList()
+function getGateList(Range)
     for i = 1, #SGs do
-        if SGLib.group(SGs[i]) == SGLib.group(MrSG) then
-            print( string.format( "Local: A:%s, N:%s", SGLib.address(SGs[i]), SGLib.name(SGs[i]) ) )
-        
+        if (Range == "Local") and SGLib.group(SGs[i]) == SGLib.group(MrSG) then
+            print( string.format( "A: %s , N: %q", SGLib.address(SGs[i]), SGLib.name(SGs[i]) ) )
+        elseif (Range == "OoG") and SGLib.group(SGs[i]) ~= SGLib.group(MrSG) and SGLib.group(SGs[i]):len() == 2 then
+            print( string.format( "A: %s%s , N: %q", SGLib.address(SGs[i]), SGLib.group(SGs[i]), SGLib.name(SGs[i]) ) )
+        elseif (Range == "Unv") and SGLib.group(SGs[i]) ~= SGLib.group(MrSG) and SGLib.group(SGs[i]):len() == 3 then
+            print( string.format( "A: %s%s , N: %q", SGLib.address(SGs[i]), SGLib.group(SGs[i]), SGLib.name(SGs[i]) ) )
+        end
+    end
+end
+function SGLocal()
+    printColor({r=0,g=255,b=0}, "Local")
+    TimeLib.stimer(0.2, function()
+        getGateList("Local")
+    end)
+end
+function SGOoG()
+    printColor({r=0,g=0,b=255}, "OoG")
+    TimeLib.stimer(0.2, function()
+        getGateList("OoG")
+    end)
+end
+function SGUnv()
+    printColor({r=255,g=0,b=0}, "Universe")
+    TimeLib.stimer(0.2, function()
+        getGateList("Unv")
+    end)
+end
+function SGInfo()
+    SGLocal()
+    TimeLib.stimer(1, function()
+        SGOoG()
+        TimeLib.stimer(1, function()
+            SGUnv()
+        end)
+    end)
+end
+SGInfo()
+hook("input","refresh", function(Input, Value)
+    if Input == "GetInfo" then
+        if Value == 1 then
+            SGInfo()
+        end
+    end
+end)
