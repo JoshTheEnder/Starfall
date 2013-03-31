@@ -1,0 +1,80 @@
+--@name The Stargate Controler
+--@author TAJG
+
+--[[
+	################################################################################
+	#### Here it is, The Stargate Controller (ChatDialer V3). 					####
+	#### The goal for this chip was to be more stabel then versions 			####
+	#### At the start of writing this chip i set myself a goal, to not use any	####
+	#### think hooks; using only the listener hook that Person8880 coded into 	####
+	#### library.																####
+	################################################################################
+]]
+
+
+local SGLb = loadLibrary("stargate")
+local ChatLib = loadLibrary("chat")
+local EntLib = loadLibrary("ents")
+local SGList = SGLib.getAllStargates()
+local Owner = EntLib.owner()
+local Chip = EntLib.self()
+local Gate = Chip:isWeldedTo()
+local Iris = SGLib.iris(Gate)
+local IDCList = { 
+	"1337",
+	"12987"
+}
+
+
+-- Checks to see if the Gate is actually a gate
+for i = 1, #SGList do
+	if Gate == SGList[i] then
+		return
+	elseif Gate ~= SGList[i] then
+		error("You didnt spawn the chip on a Stargate!")
+		return
+	end
+end
+
+if Iris:isValid() == true then
+	print("Good, you have an Iris")
+elseif Iris:isValid() == false then
+	error("Please spawn an Iris on the gate!")
+	print("Please Spawn an Iris on the gate!")
+end
+
+local function SearchIDC(IDC)
+	for i=1, #IDCList do 
+		if IDC == IDCList[i] then
+			friend = true
+			return
+		end
+	end
+end
+
+function IrisSet(State)
+	if State == "close" and SGLib.irisActive(Iris) == false then
+		SGLib.irisToggle(Iris)
+	elseif State == "open" and SGLib.irisActive(Iris) == true then 
+		SGLib.irisToggle(Iris)
+end
+
+function DialLeGate(Params) -- How to split strings.....
+	ANum, MNum = Params:find("%s")
+	Address = Params:sub(1, ANum)
+	Mode = Params:Sub(MNum)
+	local DialMode = Mode or 1
+	sg.dial(Gate, Address, DialMode)
+end
+
+function ChatToCommand(Messgae, Player)
+	local Command = Message:sub(1, 5)
+	local Params = Message:sub(6)
+	if Command = "/dial" then
+		DialLeGate(Params)
+end
+
+
+-- Listeners
+ChatLib.listen(ChatToCommand(), Owner)
+Gate:listenForCode(SearchIDC, Gate)
