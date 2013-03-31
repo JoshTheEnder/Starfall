@@ -5,7 +5,7 @@
 local EntLib = loadLibrary("ents")
 local NetLib = loadLibrary("net")
 local Chip = EntLib.self()
-local Gate = Chip:isWeldedTo()
+local TimeLib = loadLibrary("time")
 
 if SERVER then
 	--[[
@@ -22,10 +22,16 @@ if SERVER then
 	local SGList = SGLib.getAllStargates()
 	local Owner = EntLib.owner()
 	--local Chip = EntLib.self()
-	--local Gate = Chip:isWeldedTo()
+	local Gate = Chip:isWeldedTo()
 	local Iris = SGLib.iris(Gate)
 	local Message = "/iris"
 	local IDCList = { "1337", "12987" }
+
+	if NetLib.start( Chip ) then
+		NetLib.writeString( "Gate" )
+		NetLib.writeEntity( Gate )
+		NetLib.send( Owner )
+	end
 
 	--[[ 
 		Currently doesnt work :/
@@ -96,6 +102,10 @@ if SERVER then
 
 else 
 	local RenderLib = loadLibrary("render")
+	if (NetLib.readString() == "Gate") then
+		GateClient = NetLib.readEntity()
+	end
+
 	Font = RenderLib.createFont("Default", 50, false)
 	hook("render", "rendering..", function()
 	RenderLib.start3D2D(Gate:pos(), Gate:ang(), 1)
