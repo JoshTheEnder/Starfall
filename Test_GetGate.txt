@@ -38,7 +38,7 @@ ring2 = holo.create(RPos, RAng, Model, scale2)
 ring3 = holo.create(RPos, RAng, Model, scale3)
 ring4 = holo.create(RPos, RAng, Model, scale4)
 IrisRing = holo.create(RPos, RAng, "models/sprops/misc/alphanum/alphanum_x.mdl", Vector(15,1.5,15))
-IrisRingo = holo.create(RPos, RAng, Model, Vector(18,18,6))
+IrisRingo = holo.create(RPos, RAng, "models/holograms/hq_torus_thin.mdl", Vector(18.5,18.5,8))
 
 
 hook("think","hologramms",function()
@@ -54,11 +54,11 @@ elseif sg.open(MrSGE) == false and sg.active(MrSGE) == true then
 else RingColour = {255,255,255,75}
 end
 if sg.irisActive(MrIris) == true then
-    IrisRing:setColor(255,0,0,120)
-    IrisRingo:setColor(255,0,0,120)
+--    IrisRing:setColor(255,0,0,120)
+    IrisRingo:setColor(255,0,0,255)
 elseif sg.irisActive(MrIris) == false then
     IrisRing:setColor(255,0,0,0)
-    IrisRingo:setColor(0,255,0,120)
+    IrisRingo:setColor(0,255,0,255)
 end
 
 
