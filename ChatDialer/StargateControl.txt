@@ -19,13 +19,14 @@ local SGList = SGLib.getAllStargates()
 local Owner = EntLib.owner()
 local Chip = EntLib.self()
 local Gate = Chip:isWeldedTo()
+local Message = "/iris close"
 local Iris = SGLib.iris(Gate)
 local IDCList = { 
 	"1337",
 	"12987"
 }
 
-
+--[[ Currently doesnt work and stops the chip from working :/
 -- Checks to see if the Gate is actually a gate
 for i = 1, #SGList do
 	if Gate == SGList[i] then
@@ -35,6 +36,7 @@ for i = 1, #SGList do
 		return
 	end
 end
+]]
 
 if Iris:isValid() == true then
 	print("Good, you have an Iris")
@@ -68,8 +70,8 @@ function DialLeGate(Params) -- How to split strings.....
 end
 
 function ChatToCommand(Messgae, Player)
-	local Command = Message:sub(1, 5)
-	local Params = Message:sub(6)
+	Command = Message:sub(1, 5) -- ERROR: Attempt to index local "Message" (a nil value)
+	Params = Message:sub(6)
 	if Command = "/dial" then
 		DialLeGate(Params)
 end
