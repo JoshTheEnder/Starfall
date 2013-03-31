@@ -1,4 +1,4 @@
---@name Get Stargates
+--@name Gate Rings
 --@author TAJG
 
 local sg = loadLibrary("stargate")
@@ -69,7 +69,7 @@ NewAng = RAng + Angle(90,0,0)
 IrisRing:setAng(RAng + Angle(0,90,0))
 IrisRingo:setAng(NewAng)
 IrisRing:setPos(RPos)
-IrisRing:setPos(RPos)
+IrisRingo:setPos(RPos)
 ring:setColor(unpack(RingColour))
 ring2:setColor(unpack(RingColour))
 ring3:setColor(unpack(RingColour))
