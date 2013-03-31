@@ -4,6 +4,8 @@
 
 local EntLib = loadLibrary("ents")
 local NetLib = loadLibrary("net")
+local Chip = EntLib.self()
+local Gate = Chip:isWeldedTo()
 
 if SERVER then
 	--[[
@@ -19,8 +21,8 @@ if SERVER then
 	local ChatLib = loadLibrary("chat")
 	local SGList = SGLib.getAllStargates()
 	local Owner = EntLib.owner()
-	local Chip = EntLib.self()
-	local Gate = Chip:isWeldedTo()
+	--local Chip = EntLib.self()
+	--local Gate = Chip:isWeldedTo()
 	local Iris = SGLib.iris(Gate)
 	local Message = "/iris"
 	local IDCList = { "1337", "12987" }
@@ -93,11 +95,13 @@ if SERVER then
 	]]--
 
 else 
-
 	local RenderLib = loadLibrary("render")
+	Font = RenderLib.createFont("Default", 50, false)
+	hook("render", "rendering..", function()
+	RenderLib.start3D2D(Gate:pos(), Gate:ang(), 1)
+		RenderLib.drawText(Font, 10, 10, "123456789", RenderLib.ALIGN_TEXT_CENTER )
 
-
-
-
+	RenderLib.end3D2D()
+	end)
 
 end
