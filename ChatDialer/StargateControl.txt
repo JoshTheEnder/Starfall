@@ -1,119 +1,90 @@
 --@name The Stargate Controler
 --@author TAJG
---@sharedscreen
 
+--[[
+	################################################################################
+	#### Here it is, The Stargate Controller (ChatDialer V3). 					####
+	#### The goal for this chip was to be more stabel then versions 			####
+	#### At the start of writing this chip i set myself a goal, to not use any	####
+	#### think hooks; using only the listener hook that Person8880 coded into 	####
+	#### library and the ChatLib.listen() hook :)								####
+	################################################################################
+]]
 local EntLib = loadLibrary("ents")
-local NetLib = loadLibrary("net")
-
-local TimeLib = loadLibrary("time")
-
-if SERVER then
-	--[[
-		################################################################################
-		#### Here it is, The Stargate Controller (ChatDialer V3). 					####
-		#### The goal for this chip was to be more stabel then versions 			####
-		#### At the start of writing this chip i set myself a goal, to not use any	####
-		#### think hooks; using only the listener hook that Person8880 coded into 	####
-		#### library and the ChatLib.listen() hook :)								####
-		################################################################################
-	]]
-	local SGLib = loadLibrary("stargate")
-	local ChatLib = loadLibrary("chat")
-	local SGList = SGLib.getAllStargates()
-	local Owner = EntLib.owner()
-	local Chip = EntLib.self()
-	local Gate = Chip:isWeldedTo()
-	local Iris = SGLib.iris(Gate)
-	local Message = "/iris"
-	local IDCList = { "1337", "12987" }
+local SGLib = loadLibrary("stargate")
+local ChatLib = loadLibrary("chat")
+local SGList = SGLib.getAllStargates()
+local Owner = EntLib.owner()
+local Chip = EntLib.self()
+local Gate = Chip:isWeldedTo()
+local Iris = SGLib.iris(Gate)
+local Message = "/iris"
+local IDCList = { "1337", "12987" }
 
 
 
-	--[[ 
-		Currently doesnt work :/
-		Checks to see if the Gate is actually a gate
-		for i = 1, #SGList do
-			if Gate == SGList[i] then
-				return
-			elseif Gate ~= SGList[i] then
-				--error("You didnt spawn the chip on a Stargate!")
-				return
-			end
-		end
-	]]--
-
-	if Iris == nil then
-	    print("Please Spawn an Iris on the gate!")
-	    error("Please spawn an Iris on the gate!")
-	elseif Iris ~= nil then
-		print("Good, you have an Iris")
-	end
-
-	local function SearchIDC(IDC)
-		for i=1, #IDCList do 
-			if IDC == IDCList[i] then
-				friend = true
-				return
-			end
+--[[ 
+	Currently doesnt work :/
+	Checks to see if the Gate is actually a gate
+	for i = 1, #SGList do
+		if Gate == SGList[i] then
+			return
+		elseif Gate ~= SGList[i] then
+			--error("You didnt spawn the chip on a Stargate!")
+			return
 		end
 	end
+]]--
 
-	function IrisSet(Params)
-	    if Params == "close" and SGLib.irisActive(Iris) == false then
-			      SGLib.irisToggle(Iris)
-		   elseif Params == "open" and SGLib.irisActive(Iris) == true then 
-			      SGLib.irisToggle(Iris)
-	    end
-	end
-
-	function DialLeGate(Params) -- How to split strings.....
-	    ANum, MNum = Params:find("%s")
-	    Address = Params:sub(1, ANum)
-	    --Mode = Params:Sub(MNum)
-	    local DialMode = 0 -- Mode or 1
-	    print(string.format("Dialing: %s", Address))
-	    SGLib.dial(Gate, Address:upper(), DialMode)
-	end
-
-	function ChatToCommand(Message, Player)
-	    Command = Message:sub(1, 6)
-	    Params = Message:sub(7)
-	    print(string.format("%q", Command)) print(string.format("%q", Params))
-	    if Command == "/dial " then
-	        DialLeGate(Params)
-	    elseif Command == "/iris " then
-	        IrisSet(Params)
-	    elseif Command == "/close" then
-	        SGLib.close(Gate)
-	    end
-	end
-
-	if NetLib.start() then
-		NetLib.writeString( "Gate" )
-		NetLib.writeEntity( Gate )
-		NetLib.broadcast()
-	end
-
-	-- Listeners
-	ChatLib.listen(ChatToCommand, Owner)
-	Gate:listenForCode(SearchIDC, Gate)
-	--[[print("Testing")
-	ChatLib.botSay("TAJG","TEST")
-	]]--
-
-else 
-	local Chip = EntLib.self()
-	local RenderLib = loadLibrary("render")
-	if (NetLib.readString() == "Gate") then
-		GateClient = NetLib.readEntity()
-	end
-
-	Font = RenderLib.createFont("Default", 50, false)
-	hook("render", "rendering..", function()
-	RenderLib.start3D2D(Gate:pos(), Gate:ang(), 1)
-		RenderLib.drawText(Font, 10, 10, "123456789", RenderLib.ALIGN_TEXT_CENTER )
-
-	RenderLib.end3D2D()
-	end)
-
+if Iris == nil then
+    print("Please Spawn an Iris on the gate!")
+    error("Please spawn an Iris on the gate!")
+elseif Iris ~= nil then
+	print("Good, you have an Iris")
 end
+
+local function SearchIDC(IDC)
+	for i=1, #IDCList do 
+		if IDC == IDCList[i] then
+			friend = true
+			return
+		end
+	end
+end
+
+function IrisSet(Params)
+    if Params == "close" and SGLib.irisActive(Iris) == false then
+		      SGLib.irisToggle(Iris)
+	   elseif Params == "open" and SGLib.irisActive(Iris) == true then 
+		      SGLib.irisToggle(Iris)
+    end
+end
+
+function DialLeGate(Params) -- How to split strings.....
+    ANum, MNum = Params:find("%s")
+    Address = Params:sub(1, ANum)
+    --Mode = Params:Sub(MNum)
+    local DialMode = 0 -- Mode or 1
+    print(string.format("Dialing: %s", Address))
+    SGLib.dial(Gate, Address:upper(), DialMode)
+end
+
+function ChatToCommand(Message, Player)
+    Command = Message:sub(1, 6)
+    Params = Message:sub(7)
+    print(string.format("%q", Command)) print(string.format("%q", Params))
+    if Command == "/dial " then
+        DialLeGate(Params)
+    elseif Command == "/iris " then
+        IrisSet(Params)
+    elseif Command == "/close" then
+        SGLib.close(Gate)
+    end
+end
+
+-- Listeners
+ChatLib.listen(ChatToCommand, Owner)
+Gate:listenForCode(SearchIDC, Gate)
+--[[print("Testing")
+ChatLib.botSay("TAJG","TEST")
+]]--
