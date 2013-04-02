@@ -1,0 +1,50 @@
+--@name DHD Gate Hologram
+--@author TAJG
+
+local WireLib = loadLibrary("wire")
+local HoloLib = loadLibrary("holograms")
+local SGLib = loadLibrary("stargate")
+local EntLib = loadLibrary("ents")
+
+WireLib.createInputs( { "Stargate" } , { "wirelink" } )
+local Gate = WireLib.ports.Stargate:entity()
+local DHD = SGLib.dhd( Gate )
+local Iris = Gate:iris()
+IrisModel = Iris:model()
+GateModel = Gate:model()
+
+GateHolo = HoloLib.create(Vector(0,0,0), Angle(0,0,0), "models/alexalx/stargate_cebt/sgtbase.mdl", Vector( 0.2, 0.2, 0.2 ) )
+IrisHolo = HoloLib.create(Vector(0,0,0), Angle(0,0,0), "models/sprops/geometry/fdisc_144.mdl", Vector( 0.3, 0.11, 0.3 ) )
+EHHolo = HoloLib.create(Vector(0,0,0), Angle(0,0,0), "models/sprops/geometry/fdisc_144.mdl", Vector( 0.3, 0.09, 0.3 ) )
+
+hook("think", "holo", function()
+    GateHolo:setPos(DHD:pos() + Vector(0, 0, 100))
+    IrisHolo:setPos(DHD:pos() + Vector(0, 0, 100))
+    EHHolo:setPos(DHD:pos() + Vector(0, 0, 100))
+    GateHolo:setAng(DHD:ang() - Angle(15, 0, 0) )
+    IrisHolo:setAng(DHD:ang() + Angle(0, 90, 0))
+    EHHolo:setAng(DHD:ang() + Angle(0, 90, 0))
+    IrisHolo:setMaterial("models/debug/debugwhite")
+    if Gate:open() == true then
+        if Gate:inbound() == false then
+            GateHolo:setColor(0, 255, 0, 255)
+        elseif Gate:open() == true and Gate:inbound() == true then
+            GateHolo:setColor(255, 0, 0, 255)
+        end
+    elseif Gate:open() == false then
+        GateHolo:setColor(255, 255, 255, 255)
+    end
+    
+    if Gate:open() == true then
+        EHHolo:setColor(0, 0, 255, 255)
+    elseif Gate:open() == false then
+        EHHolo:setColor(0, 0, 255, 0)
+    end
+    
+    if SGLib.irisActive( Iris ) == true then
+        IrisHolo:setColor(168, 168, 168, 255)
+    elseif SGLib.irisActive( Iris ) == false then
+        IrisHolo:setColor(168, 168, 168, 0)
+    end
+
+end)
