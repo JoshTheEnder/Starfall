@@ -6,7 +6,8 @@ local HoloLib = loadLibrary("holograms")
 local SGLib = loadLibrary("stargate")
 local EntLib = loadLibrary("ents")
 
-WireLib.createInputs( { "Stargate" } , { "wirelink" } )
+WireLib.createInputs( { "Stargate" , "PrintStuff" } , { "wirelink" , "normal" } )
+WireLib.createOutputs( { "C1","C2","C3","C4","C5","C6","C7","C8","C9" } , { "vector","vector","vector","vector","vector","vector","vector","vector","vector" } )
 local Gate = WireLib.ports.Stargate:entity()
 local DHD = SGLib.dhd( Gate )
 local Iris = Gate:iris()
@@ -14,37 +15,125 @@ IrisModel = Iris:model()
 GateModel = Gate:model()
 
 GateHolo = HoloLib.create(Vector(0,0,0), Angle(0,0,0), "models/alexalx/stargate_cebt/sgtbase.mdl", Vector( 0.2, 0.2, 0.2 ) )
-IrisHolo = HoloLib.create(Vector(0,0,0), Angle(0,0,0), "models/sprops/geometry/fdisc_144.mdl", Vector( 0.3, 0.11, 0.3 ) )
-EHHolo = HoloLib.create(Vector(0,0,0), Angle(0,0,0), "models/sprops/geometry/fdisc_144.mdl", Vector( 0.3, 0.09, 0.3 ) )
+IrisHolo = HoloLib.create(Vector(0,0,0), Angle(0,0,0), "models/zup/stargate/sga_shield.mdl", Vector( 0.2, 0.2, 0.2 ) )
+EHHolo = HoloLib.create(Vector(0,0,0), Angle(0,0,0), "models/sgorlin/stargate_horizon_orlin.mdl", Vector( 0.3, 0.45, 0.45 ) )
+--IrisHolo:setMaterial("models/debug/debugwhite")
+ChevOff = Vector(0, 0, 0)
+ChevOn = Vector(0, 0, 255)
 
 hook("think", "holo", function()
     GateHolo:setPos(DHD:pos() + Vector(0, 0, 100))
     IrisHolo:setPos(DHD:pos() + Vector(0, 0, 100))
     EHHolo:setPos(DHD:pos() + Vector(0, 0, 100))
     GateHolo:setAng(DHD:ang() - Angle(15, 0, 0) )
-    IrisHolo:setAng(DHD:ang() + Angle(0, 90, 0))
-    EHHolo:setAng(DHD:ang() + Angle(0, 90, 0))
-    IrisHolo:setMaterial("models/debug/debugwhite")
+    IrisHolo:setAng(DHD:ang() - Angle(15, 0, 0))
+    EHHolo:setAng(DHD:ang() - Angle(15, 0, 0))
     if Gate:open() == true then
         if Gate:inbound() == false then
             GateHolo:setColor(0, 255, 0, 255)
         elseif Gate:open() == true and Gate:inbound() == true then
             GateHolo:setColor(255, 0, 0, 255)
         end
-    elseif Gate:open() == false then
-        GateHolo:setColor(255, 255, 255, 255)
+    elseif Gate:open() == false and Gate:active() == true then
+        GateHolo:setColor(0, 0, 255, 255)
+    else GateHolo:setColor(255, 255, 255, 255)
+    end
+    Chevrons = Gate:chevrons()
+
+    if Gate:inbound() == true then
+        ChevOn = Vector(255, 0, 0)
+    elseif Gate:inbound() == false then
+        ChevOn = Vector(0, 0, 255)
+    end
+    
+    if WireLib.ports.PrintStuff == 0 then
+        Done = false
+    end
+    
+    if Gate:target() ~= nil then
+        GateName = Gate:target():name()
+    elseif Gate:target() == nil then
+        GateName = "Not Connected"
+    end
+    
+    if Chevrons:sub(1, 1) == "1" then
+        WireLib.ports.C1 = ChevOn
+    elseif Chevrons:sub(1, 1) == "0" then
+        WireLib.ports.C1 = ChevOff
+    end
+    
+    if Chevrons:sub(2, 2) == "1" then
+        WireLib.ports.C2 = ChevOn
+    elseif Chevrons:sub(2, 2) == "0" then
+        WireLib.ports.C2 = ChevOff
+    end
+
+    if Chevrons:sub(3, 3) == "1" then
+        WireLib.ports.C3 = ChevOn
+    elseif Chevrons:sub(3, 3) == "0" then
+        WireLib.ports.C3 = ChevOff
+    end
+    
+    if Chevrons:sub(4, 4) == "1" then
+        WireLib.ports.C4 = ChevOn
+    elseif Chevrons:sub(4, 4) == "0" then
+        WireLib.ports.C4 = ChevOff
+    end
+    
+    if Chevrons:sub(5, 5) == "1" then
+        WireLib.ports.C5 = ChevOn
+    elseif Chevrons:sub(5, 5) == "0" then
+        WireLib.ports.C5 = ChevOff
+    end
+
+    if Chevrons:sub(6, 6) == "1" then
+        WireLib.ports.C6 = ChevOn
+    elseif Chevrons:sub(6, 6) == "0" then
+        WireLib.ports.C6 = ChevOff
+    end
+
+    if Chevrons:sub(7, 7) == "1" and Gate:open() == true then
+        WireLib.ports.C7 = Vector(255, 255, 0)
+    elseif Chevrons:sub(7, 7) == "0" then
+        WireLib.ports.C7 = ChevOff
+    elseif Chevrons:sub(7, 7) == "1" and Gate:open() == false then
+        WireLib.ports.C7 = ChevOn
+    end
+    
+    if Chevrons:sub(8, 8) == "1" then
+        WireLib.ports.C8 = ChevOn
+    elseif Chevrons:sub(8, 8) == "0" then
+        WireLib.ports.C8 = ChevOff
+    end
+    
+    if Chevrons:sub(9, 9) == "1" then
+        WireLib.ports.C9 = ChevOn
+    elseif Chevrons:sub(9, 9) == "0" then
+        WireLib.ports.C9 = ChevOff
+    end
+    
+    if Chevrons:sub(1, 1) == "1" then
+        WireLib.ports.C1 = ChevOn
+    elseif Chevrons:sub(1, 1) == "0" then
+        WireLib.ports.C1 = ChevOff
+    end
+    
+    if WireLib.ports.PrintStuff == 1 and Done == false then
+        Done = true
+        print( string.format("Chevrons: %s", Chevrons ) )
+    print( string.format("Target: N: %s, A: %s",  GateName, WireLib.ports.Stargate["Dialing Address"] ) )
     end
     
     if Gate:open() == true then
-        EHHolo:setColor(0, 0, 255, 255)
+        EHHolo:setColor(255, 255, 255, 255)
     elseif Gate:open() == false then
-        EHHolo:setColor(0, 0, 255, 0)
+        EHHolo:setColor(255, 255, 255, 0)
     end
     
     if SGLib.irisActive( Iris ) == true then
-        IrisHolo:setColor(168, 168, 168, 255)
+        IrisHolo:setColor(255, 255, 225, 245)
     elseif SGLib.irisActive( Iris ) == false then
-        IrisHolo:setColor(168, 168, 168, 0)
+        IrisHolo:setColor(0, 0, 0, 0)
     end
 
 end)
