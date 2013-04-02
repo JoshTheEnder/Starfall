@@ -14,10 +14,10 @@ local EntLib = loadLibrary("ents")
 local SGLib = loadLibrary("stargate")
 local ChatLib = loadLibrary("chat")
 local SGList = SGLib.getAllStargates()
-local Owner = EntLib.owner()
 local Chip = EntLib.self()
+local Owner = Chip:owner()
 local Gate = Chip:isWeldedTo()
-local Iris = SGLib.iris(Gate)
+local Iris = Gate:iris()
 local Message = "/iris"
 local IDCList = { "1337", "12987" }
 
@@ -70,15 +70,23 @@ function DialLeGate(Params) -- How to split strings.....
 end
 
 function ChatToCommand(Message, Player)
-    Command = Message:sub(1, 6)
-    Params = Message:sub(7)
+    Command = Message:sub(1, 3)
+    Params = Message:sub(5)
     print(string.format("%q", Command)) print(string.format("%q", Params))
-    if Command == "/dial " then
+    if Command == "/gd" then
         DialLeGate(Params)
-    elseif Command == "/iris " then
+    elseif Command == "/ir" then
         IrisSet(Params)
-    elseif Command == "/close" then
+    elseif Command == "/gc" then
         SGLib.close(Gate)
+    elseif Command == "/sn" then
+    	Gate:setName(Params)
+    elseif Command == "/sa" then 
+    	Gate:setAddress(Params)
+    elseif Command == "/sg" then
+    	Gate:setGroup(Params)
+    elseif Command == "/hl" then
+    	Helper()
     end
 end
 
