@@ -7,7 +7,7 @@ local time = loadLibrary("time")
 local ents = loadLibrary("ents")
 local holo = loadLibrary("holograms")
 
-wire.createInputs({"Stargate","IrisControl"},{"wirelink","normal"})
+wire.createInputs({"Stargate","IrisControl","DialPos","DialAng"},{"wirelink","normal","vector","angle"})
 StrGts = sg.getAllStargates()
 Chip = ents.self()
 MrSGE = Chip:isWeldedTo()
@@ -22,9 +22,9 @@ sg.setGroup(MrSGE, "U@#")
 sg.setName(MrSGE, "Lava Planet")
 ]]--
 
---for i = 1, #StrGts do
-    --print(string.format("%i: Address: %s, Group: %s, Name: %s, Owner: %s", i, sg.address(StrGts[i]), sg.group(StrGts[i]), sg.name(StrGts[i]), StrGts[i]:owner() ) )    
---end
+for i = 1, #StrGts do
+    print(string.format("%i: Address: %s, Group: %s, Name: %s, Owner: %s", i, sg.address(StrGts[i]), sg.group(StrGts[i]), sg.name(StrGts[i]), StrGts[i]:owner() ) )    
+end
 Model = "models/holograms/hq_torus_thin.mdl"
 RPos = MrSGE:pos()
 RAng = MrSGE:ang()
@@ -37,11 +37,12 @@ ring = holo.create(RPos, RAng, Model, scale)
 ring2 = holo.create(RPos, RAng, Model, scale2)
 ring3 = holo.create(RPos, RAng, Model, scale3)
 ring4 = holo.create(RPos, RAng, Model, scale4)
-IrisRing = holo.create(RPos, RAng, "models/sprops/misc/alphanum/alphanum_x.mdl", Vector(15,1.5,15))
+IrisRing = holo.create(RPos, RAng, "models/props_c17/streetsign004f.mdl", Vector(5,15,5))
 IrisRingo = holo.create(RPos, RAng, "models/holograms/hq_torus_thin.mdl", Vector(18.5,18.5,8))
 
 
 hook("think","hologramms",function()
+
 if sg.inbound(MrSGE) == true and sg.open(MrSGE) == true then
     RingColour = {255,0,0,100}
     time.stimer(2, function()
@@ -54,11 +55,25 @@ elseif sg.open(MrSGE) == false and sg.active(MrSGE) == true then
 else RingColour = {255,255,255,75}
 end
 if sg.irisActive(MrIris) == true then
---    IrisRing:setColor(255,0,0,120)
+    
     IrisRingo:setColor(255,0,0,255)
 elseif sg.irisActive(MrIris) == false then
-    IrisRing:setColor(255,0,0,0)
+    
     IrisRingo:setColor(0,255,0,255)
+end
+
+
+if MrSGE:inbound() == true then
+    if ( MrSGE:open() and sg.irisActive( MrIris ) ) == true then
+        IrisRing:setAng( wire.ports.DialAng - Angle(0,90,0))
+        IrisRing:setColor(255,255,255,255)
+        IrisRing:setPos( wire.ports.DialPos )
+    elseif MrSGE:open() == true and sg.irisActive( MrIris ) == false then
+        IrisRing:setColor(255,0,0,0)
+    end
+elseif MrSGE:inbound() == false then
+    IrisRing:setPos( RPos )
+    IrisRing:setColor(255,0,0,0)
 end
 
 
@@ -66,9 +81,9 @@ end
 RPos = MrSGE:pos()
 RAng = MrSGE:ang()
 NewAng = RAng + Angle(90,0,0)
-IrisRing:setAng(RAng + Angle(0,90,0))
+
 IrisRingo:setAng(NewAng)
-IrisRing:setPos(RPos)
+
 IrisRingo:setPos(RPos)
 ring:setColor(unpack(RingColour))
 ring2:setColor(unpack(RingColour))

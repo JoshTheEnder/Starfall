@@ -1,0 +1,98 @@
+--@name Screen Testing
+--@author TAJG
+--@sharedscreen
+--@include Ikarus_Framework/core.txt
+--@include Ikarus_Framework/ui/core.txt
+--@include Ikarus_Framework/ui/basecontrol.txt
+--@include Ikarus_Framework/ui/button.txt
+--@include Ikarus_Framework/ui/label.txt
+
+require("Ikarus_Framework/core.txt")
+require("Ikarus_Framework/ui/core.txt")
+require("Ikarus_Framework/ui/label.txt")
+require("Ikarus_Framework/ui/button.txt")
+require("Ikarus_Framework/ui/basecontrol.txt")
+
+
+if CLIENT then
+	local Rendered = true
+	local function CreateStuff()
+		if Rendered then
+			Rendered = false
+			BtnHight = 60
+			BtnWidth = 70
+			Row1H = 10
+			Row2H = Row1H + 80
+			Row3H = Row2H + 80
+			Row4H = Row3H + 80
+			Row5H = Row4H + 80
+			Colum1 = 10
+			Colum2 = Colum1 + 80
+			Colum3 = Colum2 + 80
+			Colum4 = Colum3 + 80
+			Colum5 = Colum4 + 80
+			Colum6 = Colum5 + 80
+			local style = UI.Button.GetDefaultStyle()
+			local style2 = UI.Button.GetDefaultStyle()
+			local Dial = UI.Button.CreateNewButton( Colum3, Row5H, 150, BtnHight, "DIAL", SendButtonPress, style2 )
+
+			style.TextFont = UI.GateSG1Font
+
+			local GlyphA = UI.Button.CreateNewButton( Colum1, Row1H, BtnWidth, BtnHight, "A", SendButtonPress, style )
+			local GlyphB = UI.Button.CreateNewButton( Colum2, Row1H, BtnWidth, BtnHight, "B", SendButtonPress, style )
+			local GlyphC = UI.Button.CreateNewButton( Colum3, Row1H, BtnWidth, BtnHight, "C", SendButtonPress, style )
+			local GlyphD = UI.Button.CreateNewButton( Colum4, Row1H, BtnWidth, BtnHight, "D", SendButtonPress, style )
+			local GlyphE = UI.Button.CreateNewButton( Colum5, Row1H, BtnWidth, BtnHight, "E", SendButtonPress, style )
+			local GlyphF = UI.Button.CreateNewButton( Colum6, Row1H, BtnWidth, BtnHight, "F", SendButtonPress, style )
+			
+			local GlyphG = UI.Button.CreateNewButton( Colum1, Row2H, BtnWidth, BtnHight, "G", SendButtonPress, style )
+			local GlyphH = UI.Button.CreateNewButton( Colum2, Row2H, BtnWidth, BtnHight, "H", SendButtonPress, style )
+			local GlyphI = UI.Button.CreateNewButton( Colum3, Row2H, BtnWidth, BtnHight, "I", SendButtonPress, style )
+			local GlyphJ = UI.Button.CreateNewButton( Colum4, Row2H, BtnWidth, BtnHight, "J", SendButtonPress, style )
+			local GlyphK = UI.Button.CreateNewButton( Colum5, Row2H, BtnWidth, BtnHight, "K", SendButtonPress, style )
+			local GlyphL = UI.Button.CreateNewButton( Colum6, Row2H, BtnWidth, BtnHight, "L", SendButtonPress, style )
+
+			local GlyphM = UI.Button.CreateNewButton( Colum1, Row3H, BtnWidth, BtnHight, "M", SendButtonPress, style )
+			local GlyphN = UI.Button.CreateNewButton( Colum2, Row3H, BtnWidth, BtnHight, "N", SendButtonPress, style )
+			local GlyphO = UI.Button.CreateNewButton( Colum3, Row3H, BtnWidth, BtnHight, "O", SendButtonPress, style )
+			local GlyphP = UI.Button.CreateNewButton( Colum4, Row3H, BtnWidth, BtnHight, "P", SendButtonPress, style )
+			local GlyphQ = UI.Button.CreateNewButton( Colum5, Row3H, BtnWidth, BtnHight, "Q", SendButtonPress, style )
+			local GlyphR = UI.Button.CreateNewButton( Colum6, Row3H, BtnWidth, BtnHight, "R", SendButtonPress, style )
+			
+			local GlyphS = UI.Button.CreateNewButton( Colum1, Row4H, BtnWidth, BtnHight, "S", SendButtonPress, style )
+			local GlyphT = UI.Button.CreateNewButton( Colum2, Row4H, BtnWidth, BtnHight, "T", SendButtonPress, style )
+			local GlyphU = UI.Button.CreateNewButton( Colum3, Row4H, BtnWidth, BtnHight, "U", SendButtonPress, style )		
+			local GlyphV = UI.Button.CreateNewButton( Colum4, Row4H, BtnWidth, BtnHight, "V", SendButtonPress, style )
+			local GlyphW = UI.Button.CreateNewButton( Colum5, Row4H, BtnWidth, BtnHight, "W", SendButtonPress, style )
+			local GlyphX = UI.Button.CreateNewButton( Colum6, Row4H, BtnWidth, BtnHight, "X", SendButtonPress, style )
+			
+			local GlyphY = UI.Button.CreateNewButton( Colum1, Row5H, BtnWidth, BtnHight, "Y", SendButtonPress, style )
+			local GlyphZ = UI.Button.CreateNewButton( Colum2, Row5H, BtnWidth, BtnHight, "Z", SendButtonPress, style )
+			local GlyphAt = UI.Button.CreateNewButton( Colum5, Row5H, BtnWidth, BtnHight, "@", SendButtonPress, style )
+			local GlyphPoO = UI.Button.CreateNewButton( Colum6, Row5H, BtnWidth, BtnHight, "#", SendButtonPress, style )
+		end
+	end
+	function SendButtonPress(button, ply)
+		Red = { r=0, g=255, b=0 }
+		printColor( Red, string.format("Encoding %q, %s", button.Text, ply:name() ) )
+		if NetLib.start() then
+			NetLib.writeString(button.Text)
+			NetLib.sendToServer()
+		end
+	end
+
+	hook("render", "my_render_hook", CreateStuff)
+
+end
+
+if SERVER then
+	local SGLib = loadLibrary("stargate")
+	WireLib.createInputs( { "Gate" } , { "wirelink" } )
+	Gate = WireLib.ports.Gate:entity()
+	DHD = SGLib.dhd( Gate )
+
+	function ServerMessageDo()
+		SGLib.dhdPressButton( DHD, NetLib.readString() )
+	end
+	hook("net","receiving", ServerMessageDo)
+end

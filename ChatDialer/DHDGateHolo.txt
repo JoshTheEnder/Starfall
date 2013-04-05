@@ -5,29 +5,36 @@ local WireLib = loadLibrary("wire")
 local HoloLib = loadLibrary("holograms")
 local SGLib = loadLibrary("stargate")
 local EntLib = loadLibrary("ents")
+local Chip = EntLib.self()
 
 WireLib.createInputs( { "Stargate" , "PrintStuff" } , { "wirelink" , "normal" } )
-WireLib.createOutputs( { "C1","C2","C3","C4","C5","C6","C7","C8","C9" } , { "vector","vector","vector","vector","vector","vector","vector","vector","vector" } )
+WireLib.createOutputs( { "C1","C2","C3","C4","C5","C6","C7","C8","C9", "DialingGateLocation", "HideHUD", "DialingGateAngle" } , { "vector","vector","vector","vector","vector","vector","vector","vector","vector", "vector", "normal", "angle" } )
 local Gate = WireLib.ports.Stargate:entity()
-local DHD = SGLib.dhd( Gate )
+local DHD = Chip:isWeldedTo()
 local Iris = Gate:iris()
 IrisModel = Iris:model()
 GateModel = Gate:model()
 
-GateHolo = HoloLib.create(Vector(0,0,0), Angle(0,0,0), "models/alexalx/stargate_cebt/sgtbase.mdl", Vector( 0.2, 0.2, 0.2 ) )
-IrisHolo = HoloLib.create(Vector(0,0,0), Angle(0,0,0), "models/zup/stargate/sga_shield.mdl", Vector( 0.2, 0.2, 0.2 ) )
-EHHolo = HoloLib.create(Vector(0,0,0), Angle(0,0,0), "models/sgorlin/stargate_horizon_orlin.mdl", Vector( 0.3, 0.45, 0.45 ) )
---IrisHolo:setMaterial("models/debug/debugwhite")
+GateHolo = HoloLib.create(Vector(0,0,0), Angle(0,0,0), "models/alexalx/stargate_cebt/sgtbase.mdl", Vector( 0.15, 0.15, 0.15 ) )
+IrisHolo = HoloLib.create(Vector(0,0,0), Angle(0,0,0), "models/zup/stargate/sga_shield.mdl", Vector( 0.15, 0.15, 0.15 ) )
+EHHolo = HoloLib.create(Vector(0,0,0), Angle(0,0,0), "models/sgorlin/stargate_horizon_orlin.mdl", Vector( 0.05, 0.35, 0.35 ) )
+IrisHolo:setMaterial("materials/zup/stargate/shield_at")
 ChevOff = Vector(0, 0, 0)
 ChevOn = Vector(0, 0, 255)
 
+
+    GateHolo:setPos( DHD:toWorld( Vector( 6, 0, 25 ) ) )
+    IrisHolo:setPos( DHD:toWorld( Vector( 6, 0, 25.1 ) ) )
+    EHHolo:setPos( DHD:toWorld( Vector( 6, 0, 24 ) ) )
+    GateHolo:setAng(DHD:ang() - Angle(56, 0, 0) )
+    IrisHolo:setAng(DHD:ang() - Angle(56, 0, 0))
+    EHHolo:setAng(DHD:ang() - Angle(56, 0, 0))
+
+GateHolo:setParent( DHD )
+IrisHolo:setParent( DHD )
+EHHolo:setParent( DHD )
+
 hook("think", "holo", function()
-    GateHolo:setPos(DHD:pos() + Vector(0, 0, 100))
-    IrisHolo:setPos(DHD:pos() + Vector(0, 0, 100))
-    EHHolo:setPos(DHD:pos() + Vector(0, 0, 100))
-    GateHolo:setAng(DHD:ang() - Angle(15, 0, 0) )
-    IrisHolo:setAng(DHD:ang() - Angle(15, 0, 0))
-    EHHolo:setAng(DHD:ang() - Angle(15, 0, 0))
     if Gate:open() == true then
         if Gate:inbound() == false then
             GateHolo:setColor(0, 255, 0, 255)
@@ -125,15 +132,27 @@ hook("think", "holo", function()
     end
     
     if Gate:open() == true then
+        if Gate:target() ~= nil then
+        WireLib.ports.DialingGateLocation = Gate:target():pos()
+        WireLib.ports.DialingGateAngle = Gate:target():ang()
+        WireLib.ports.HideHUD = 0
+        else WireLib.ports.DialingGateLocation = Gate:pos()
+        end
+    elseif Gate:open() == false then
+        WireLib.ports.DialingGateLocation = Gate:pos()
+        WireLib.ports.HideHUD = 1
+    end
+    
+    if Gate:open() == true then
         EHHolo:setColor(255, 255, 255, 255)
     elseif Gate:open() == false then
         EHHolo:setColor(255, 255, 255, 0)
     end
     
     if SGLib.irisActive( Iris ) == true then
-        IrisHolo:setColor(255, 255, 225, 245)
+        IrisHolo:setColor(255, 255, 225, 255)
     elseif SGLib.irisActive( Iris ) == false then
-        IrisHolo:setColor(0, 0, 0, 0)
+        IrisHolo:setColor(255, 255, 255, 0)
     end
 
 end)
