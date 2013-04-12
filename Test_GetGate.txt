@@ -9,6 +9,9 @@ local holo = loadLibrary("holograms")
 
 wire.createInputs({"Stargate","IrisControl","DialPos","DialAng"},{"wirelink","normal","vector","angle"})
 StrGts = sg.getAllStargates()
+for i = 1, #StrGts do
+    print(string.format("%i: Address: %s, Group: %s, Name: %s, Owner: %s", i, sg.address(StrGts[i]), sg.group(StrGts[i]), sg.name(StrGts[i]), StrGts[i]:owner() ) )    
+end
 Chip = ents.self()
 MrSGE = Chip:isWeldedTo()
 --MrSG = wire.ports.Stargate
@@ -22,9 +25,7 @@ sg.setGroup(MrSGE, "U@#")
 sg.setName(MrSGE, "Lava Planet")
 ]]--
 
-for i = 1, #StrGts do
-    print(string.format("%i: Address: %s, Group: %s, Name: %s, Owner: %s", i, sg.address(StrGts[i]), sg.group(StrGts[i]), sg.name(StrGts[i]), StrGts[i]:owner() ) )    
-end
+
 Model = "models/holograms/hq_torus_thin.mdl"
 RPos = MrSGE:pos()
 RAng = MrSGE:ang()

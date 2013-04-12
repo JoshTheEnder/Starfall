@@ -2,21 +2,24 @@
 --@author TAJG
 
 local sg = loadLibrary("stargate")
-local wire = loadLibrary("wire")
+local chat = loadLibrary("chat")
+--[[local wire = loadLibrary("wire")
 local time = loadLibrary("time")
 local ents = loadLibrary("ents")
 
+
+
 wire.createInputs({"Stargate","IrisControl"},{"wirelink","normal"})
 MrChip = ents.self()
---MrSG = MrChip:isWeildedTo()
-MrSG = wire.ports.Stargate
-MrSGE = MrSG:entity()
+MrSGE = MrChip:isWeldedTo()
+--MrSG = wire.ports.Stargate
+--`MrSGE = MrSG:entity()
 MrIris = sg.iris(MrSGE)
 StrGts = sg.getAllStargates()
 
-sg.setAddress(MrSGE, "TAJGRN")
-sg.setGroup(MrSGE, "I@")
-sg.setName(MrSGE, "TAJG's Gate")
+--sg.setAddress(MrSGE, "TAJGRN")
+--sg.setGroup(MrSGE, "P@")
+--sg.setName(MrSGE, "TAJG's Gate")
 
 for i = 1, #StrGts do
     print(string.format("%i: Address: %s, Group: %s, Name: %s, Owner: %s", i, sg.address(StrGts[i]), sg.group(StrGts[i]), sg.name(StrGts[i]), StrGts[i]:owner() ) )    
@@ -35,22 +38,31 @@ Address = "SHAKUR"
 --sg.dial(MrSGE, StrGts[9], fast)
 j = 0.6
 k = 2
+]]--
+function TellMeGateStuff(Gate)
+    local Targate = Gate:target()
+    printColor("SG Info", {r=255,g=0,b=255}, string.format("Outbound conneciton from %s%s %q to %s%s %q", Targate:address(),Targate:group(),Targate:name(), Gate:address(),Gate:group(),Gate:name() ) )
+end
 
+
+
+sg.listen(TellMeGateStuff)
+--[[
 DHD = sg.dhd(MrSGE)
 
-    sg.dhdPressButton(DHD, "S")
+    sg.dhdPressButton(DHD, "T")
     time.stimer(j, function()
-        sg.dhdPressButton(DHD, "H")
+        sg.dhdPressButton(DHD, "A")
         time.stimer(j, function()
-            sg.dhdPressButton(DHD, "A")
+            sg.dhdPressButton(DHD, "J")
             time.stimer(j, function()
-                sg.dhdPressButton(DHD, "K")
+                sg.dhdPressButton(DHD, "G")
                 time.stimer(j, function()
-                    sg.dhdPressButton(DHD, "U")
+                    sg.dhdPressButton(DHD, "R")
                     time.stimer(j, function()
-                        sg.dhdPressButton(DHD, "R")
+                        sg.dhdPressButton(DHD, "N")
                         time.stimer(j, function()
-                            sg.dhdPressButton(DHD, "P")
+                            sg.dhdPressButton(DHD, "DIAL")
                             time.stimer(j, function()
                                 sg.dhdPressButton(DHD, "DIAL")
                                 time.stimer(j, function()
@@ -63,5 +75,4 @@ DHD = sg.dhd(MrSGE)
             end)
         end)
     end)
-
-
+]]--

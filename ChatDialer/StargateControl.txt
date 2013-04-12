@@ -7,20 +7,25 @@
 	#### The goal for this chip was to be more stabel then versions 			####
 	#### At the start of writing this chip i set myself a goal, to not use any	####
 	#### think hooks; using only the listener hook that Person8880 coded into 	####
-	#### library and the ChatLib.listen() hook :)								####
+	#### the stargate library and the ChatLib.listen hook :)								####
 	################################################################################
 ]]
 local EntLib = loadLibrary("ents")
 local SGLib = loadLibrary("stargate")
 local ChatLib = loadLibrary("chat")
+local TimeLib = loadLibrary("time")
+local FindLib = loadLibrary("find")
 local SGList = SGLib.getAllStargates()
 local Chip = EntLib.self()
 local Owner = Chip:owner()
 local Gate = Chip:isWeldedTo()
 local Iris = Gate:iris()
-local Message = "/iris"
-local IDCList = { "1337", "12987" }
+local IDCList = { "12987" , "311" , "9799" }
+local NameList = { "TAJG" , "Cookiemorph" , "Alex5511" } -- these should match up to the IDCList
 local ColourRed = { 255, 0, 0 }
+local Alex = FindLib.playerByName("Alex5511")
+local Cookiemorph = FindLib.playerByName("Cookiemorph")
+
 
 
 --[[ 
@@ -37,36 +42,67 @@ local ColourRed = { 255, 0, 0 }
 ]]--
 
 if Iris == nil then
-    print("Please Spawn an Iris on the gate!")
+    printColor({ r=255,g=0,b=0}, "Please Spawn an Iris on the gate!")
     error("Please spawn an Iris on the gate!")
 elseif Iris ~= nil then
-	print("Good, you have an Iris")
+	printColor({r=0,g=255,b=0}, "Good, you have an Iris")
 end
 
 local function SearchIDC(IDC)
+Verified = false
 	for i=1, #IDCList do 
 		if IDC == IDCList[i] then
-			Verified = true
+    Verified = true
+    IrisSet("open")
+    if NameList[i] == "TAJG" then
+    ChatLib.botSay("TAJG",{r=0,g=0,b=255}, "Hey master, you're back :) " )
+    else ChatLib.botSay("TAJG",{r=0,g=255,b=0}, string.format("Oh, hello %s, the iris is open :)", NameList[i] ) )
+    end
 			break
 		end
 	end
+if Verified == false then
+ChatLib.botSay("TAJG", {r=255, g=0, b=0}, "Your IDC was not recognised!" )
+TimeLib.stimer(2, function()
+    Gate:close()
+end)
+end
+Verified = false
 end
 
 function IrisSet(Params)
     if Params == "close" and SGLib.irisActive(Iris) == false then
+        printColor( {r=255,g=255,b=0}, "Closing the iris" )
 		      SGLib.irisToggle(Iris)
 	   elseif Params == "open" and SGLib.irisActive(Iris) == true then 
+        printColor( {r=255,g=255,b=0}, "Opening the iris" )
 		      SGLib.irisToggle(Iris)
     end
+end
+
+function inboundStuffToDo(SG)
+    IrisSet("close")
+    local Targate = Gate:target()
+    local TName = Targate:name()
+    local TAdd = Targate:address()
+    ChatLib.botSay("TAJG", {r=255,g=0,b=0}, string.format("%s %q, Please send correct IDC or close the Stargate now", TName, TAdd) )
+
 end
 
 function DialLeGate(Params) -- How to split strings.....
     ANum, MNum = Params:find("%s")
     Address = Params:sub(1, ANum)
     --Mode = Params:Sub(MNum)
-    local DialMode = 0 -- Mode or 1
-    print(string.format("Dialing: %s", Address))
+    local DialMode = 1 -- Mode or 1
+    printColor({r=0,g=128,b=128}, "Dialing: ", {r=0,g=0,b=255}, string.format("%s", Address:upper() ) )
     SGLib.dial(Gate, Address:upper(), DialMode)
+end
+
+function GetGateList()
+    SGList = SGLib.getAllStargates()
+    for i = 1, #SGList do
+        printColor({r=225,g=114,b=0},string.format("%i: Address: %s, Group: %s, Name: %s, Owner: %s", i, SGLib.address(SGList[i]), SGLib.group(SGList[i]), SGLib.name(SGList[i]), SGList[i]:owner() ) )    
+    end
 end
 
 function Helper()
@@ -86,29 +122,36 @@ function Helper()
 end
 
 function ChatToCommand(Message, Player)
-    Command = Message:sub(1, 3)
-    Params = Message:sub(5)
-    print(string.format("%q", Command)) print(string.format("%q", Params))
-    if Command == "/gd" then
-        DialLeGate(Params)
-    elseif Command == "/ir" then
-        IrisSet(Params)
-    elseif Command == "/gc" then
-        SGLib.close(Gate)
-    elseif Command == "/sn" then
-    	Gate:setName(Params)
-    elseif Command == "/sa" then 
-    	Gate:setAddress(Params)
-    elseif Command == "/sg" then
-    	Gate:setGroup(Params)
-    elseif Command == "/hl" then
-    	Helper()
-    elseif Command == "/or" then
-        Verified = true
+    if Player == Owner or Alex or Cookiemorph then
+        Command = Message:sub(1, 3)
+        Params = Message:sub(5)
+        --print(string.format("%q", Command)) print(string.format("%q", Params))
+        if Command == "/gd" then
+            DialLeGate(Params)
+        elseif Command == "/ir" then
+            IrisSet(Params)
+        elseif Command == "/gc" then
+            Gate:close()
+            ChatLib.tell(Player, {r=255,g=0,b=255}, "Closing the gate!" )
+        elseif Command == "/sn" then
+            Gate:setName(Params)
+            ChatLib.tell(Player, {r=255,g=0,b=255}, string.format("Setting name to %q", Params ) )
+        elseif Command == "/sa" then 
+            Gate:setAddress(Params)
+            ChatLib.tell(Player, {r=255,g=0,b=255}, string.format("Setting address to %q", Params ) )
+        elseif Command == "/sg" then
+            Gate:setGroup(Params)
+            ChatLib.tell(Player, {r=255,g=0,b=255}, string.format("Setting group to %q", Params ) )
+        elseif Command == "/hl" then
+            Helper()
+        elseif Command == "/gl" then
+            GetGateList()
+        end
     end
 end
 
 -- Listeners
+Gate:listen(inboundStuffToDo)
 ChatLib.listen(ChatToCommand, Owner)
 Gate:listenForCode(SearchIDC, Gate)
 --[[print("Testing")
