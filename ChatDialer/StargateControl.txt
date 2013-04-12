@@ -27,7 +27,6 @@ local Alex = FindLib.playerByName("Alex5511")
 local Cookiemorph = FindLib.playerByName("Cookiemorph")
 
 
-
 --[[ 
 	Currently doesnt work :/
 	Checks to see if the Gate is actually a gate
@@ -152,7 +151,7 @@ end
 
 -- Listeners
 Gate:listen(inboundStuffToDo)
-ChatLib.listen(ChatToCommand, Owner)
+ChatLib.listen(ChatToCommand)
 Gate:listenForCode(SearchIDC, Gate)
 --[[print("Testing")
 ChatLib.botSay("TAJG","TEST")
