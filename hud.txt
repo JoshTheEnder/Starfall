@@ -1,0 +1,30 @@
+--@name TAJG's HUD
+--@author TAJG
+--@sharedscreen
+
+local EntLib = loadLibrary("ents")
+local FindLib = loadLibrary("find")
+local Alex = FindLib.playerByName("Alex")
+local Ivef = FindLib.playerByName("Ivef")
+local Shakur = Vector(-6775, -9598, 6848)
+
+
+
+
+if CLIENT then
+    local RenderLib = loadLibrary("render")    
+    Font = RenderLib.createFont( "Trebuchet", 36, 750, true )
+    
+    
+    hook("render", "doing stuff", function()
+    RenderLib.clear()
+    RenderLib.setColor(0,0,255,255)    
+    AlexPos = Alex:pos()
+    AlexSPos = RenderLib.toScreen(AlexPos)
+    RenderLib.drawText(Font, AlexSPos["x"], AlexSPos["y"], Alex:name(), RenderLib.TEXT_ALIGN_CENTER )
+    RenderLib.setColor(255,255,0,255)
+    PersonPos = Ivef:pos()
+    PersonSPos = RenderLib.toScreen(PersonPos)
+    RenderLib.drawText(Font, PersonSPos["x"], PersonSPos["y"], Ivef:name(), RenderLib.TEXT_ALIGN_CENTER )
+    end)
+end

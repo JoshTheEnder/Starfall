@@ -1,0 +1,38 @@
+--@name TAJG's HUD^2
+--@author TAJG
+--@sharedscreen
+
+local EntLib = loadLibrary("ents")
+local FindLib = loadLibrary("find")
+local NetLib = loadLibrary("net")
+
+if CLIENT then
+    local RenderLib = loadLibrary("render")    
+    ScreenX, ScreenY = RenderLib.getScreenRes()
+    ScreenRes = string.format("%i:%i",ScreenX,ScreenY)
+    Font = RenderLib.createFont( "Trebuchet", 26, 750, true )
+    --hook("net", "networking", NetStuff )
+    local CAddress = "DESRTPU@#"
+        
+    function TenEightyP()
+        RenderLib.clear()
+        RenderLib.setColor(0,0,0,220)
+        RenderLib.drawRect(1500, 100, 400, 800)
+    end  
+    function SixteenByNine()
+        RenderLib.clear()
+        RenderLib.setColor(89,89,89,180)
+        RenderLib.drawRect(1200, 200, 400, 600)  
+        RenderLib.setColor(255,255,255,255) 
+        RenderLib.drawText(Font, 1210, 210, string.format("Address: %s",CAddress), RenderLib.ALIGN_TEXT_CENTER )
+        RenderLib.drawText(Font, 1210, 230, "Name: BLAAAAHHAHAH", RenderLib.ALIGN_TEXT_CENTER )
+    end
+    
+    
+    
+    if ScreenRes == "1920:1080" then
+    hook("render", "1920x1080", TenEightyP )
+    elseif ScreenRes == "1600:900" then
+    hook("render", "1600:900", SixteenByNine )
+    end
+end
