@@ -5,29 +5,49 @@
 local EntLib = loadLibrary("ents")
 local FindLib = loadLibrary("find")
 local NetLib = loadLibrary("net")
+local TimeLib = loadLibrary("time")
+local Chip = EntLib.self()
+local Owner = EntLib.owner()
+
 
 if CLIENT then
     local RenderLib = loadLibrary("render")    
     ScreenX, ScreenY = RenderLib.getScreenRes()
     ScreenRes = string.format("%i:%i",ScreenX,ScreenY)
-    Font = RenderLib.createFont( "Trebuchet", 26, 750, true )
-    --hook("net", "networking", NetStuff )
-    local CAddress = "DESRTPU@#"
+    --Font = RenderLib.createFont( "Trebuchet", 26, 750, true )
+    Font = RenderLib.createFont( "Anquietas", 26, 750, true )
+    Font2 = RenderLib.createFont( "Stargate Address Glyphs ATL", 26, 750, true)
+    local CAddress = "TAJGRNP@#"
+    
+    
         
     function TenEightyP()
         RenderLib.clear()
         RenderLib.setColor(0,0,0,220)
         RenderLib.drawRect(1500, 100, 400, 800)
     end  
+    
     function SixteenByNine()
+        BoxX = 1260
+        BoxY = 200
         RenderLib.clear()
         RenderLib.setColor(89,89,89,180)
-        RenderLib.drawRect(1200, 200, 400, 600)  
+        RenderLib.drawRect(BoxX, BoxY, 340, 600)  
         RenderLib.setColor(255,255,255,255) 
-        RenderLib.drawText(Font, 1210, 210, string.format("Address: %s",CAddress), RenderLib.ALIGN_TEXT_CENTER )
-        RenderLib.drawText(Font, 1210, 230, "Name: BLAAAAHHAHAH", RenderLib.ALIGN_TEXT_CENTER )
+        RenderLib.drawText(Font, BoxX + 10, BoxY + 10, string.format("Address: %s",CAddress), RenderLib.ALIGN_TEXT_CENTER )
+        RenderLib.drawText(Font2, BoxX + 10, BoxY + 34, string.format("%s",CAddress), RenderLib.ALIGN_TEXT_CENTER )
+        RenderLib.drawText(Font, BoxX + 10, BoxY + 60, string.format("Name: %s", CName), RenderLib.ALIGN_TEXT_CENTER )
+        RenderLib.drawText(Font, BoxX + 10, BoxY + 500, string.format("P: %s", Owner:ping() ), RenderLib.ALIGN_TEXT_CENTER )
+                
     end
     
+    function NetStuff()
+    if NetLib.readString() == "HUDInfoSend" then
+        CAddress = NetLib.readString()
+        CName = NetLib.readString()
+        CState = NetLib.readString()
+    end
+    end
     
     
     if ScreenRes == "1920:1080" then
@@ -35,4 +55,11 @@ if CLIENT then
     elseif ScreenRes == "1600:900" then
     hook("render", "1600:900", SixteenByNine )
     end
+    hook("net", "networking", NetStuff )
 end
+if SERVER then
+    local WireLib = loadLibrary("wire")
+    WireLib.createOutputs( { "Entity" } , { "entity" } )
+    WireLib.ports.Entity = Chip
+end
+    

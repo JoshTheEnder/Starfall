@@ -15,6 +15,9 @@ local SGLib = loadLibrary("stargate")
 local ChatLib = loadLibrary("chat")
 local TimeLib = loadLibrary("time")
 local FindLib = loadLibrary("find")
+local NetLib = loadLibrary("net")
+local WireLib = loadLibrary("wire")
+WireLib.createInputs( { "HUDEntity" } , { "entity" } )
 local SGList = SGLib.getAllStargates()
 local Chip = EntLib.self()
 local Owner = Chip:owner()
@@ -25,7 +28,8 @@ local NameList = { "TAJG" , "Cookiemorph" , "Alex5511" } -- these should match u
 local ColourRed = { 255, 0, 0 }
 local Alex = FindLib.playerByName("Alex5511")
 local Cookiemorph = FindLib.playerByName("Cookiemorph")
-
+Gate:accessList( { Owner, Alex, Cookiemorph } )
+Gate:setLocal( false )
 
 --[[ 
 	Currently doesnt work :/
@@ -81,11 +85,17 @@ end
 
 function inboundStuffToDo(SG)
     IrisSet("close")
-    local Targate = Gate:target()
-    local TName = Targate:name()
-    local TAdd = Targate:address()
+    Targate = Gate:target()
+    TName = Targate:name()
+    TAdd = Targate:address()
     ChatLib.botSay("TAJG", {r=255,g=0,b=0}, string.format("%s %q, Please send correct IDC or close the Stargate now", TName, TAdd) )
-
+    if NetLib.start(WireLib.ports.HUDEntity) then
+        NetLib.writeString("HUDInfoSend")
+        NetLib.writeString( string.format("%s",TAdd) )
+        NetLib.writeString( string.format("%s",TName) )
+        NetLib.writeString("test")
+        NetLib.send(Owner)
+    end
 end
 
 function DialLeGate(Params) -- How to split strings.....
@@ -98,7 +108,7 @@ function DialLeGate(Params) -- How to split strings.....
 end
 
 function GetGateList()
-    SGList = SGLib.getAllStargates()
+    AddressList = SGLib.getAllStargates()
     for i = 1, #SGList do
         printColor({r=225,g=114,b=0},string.format("%i: Address: %s, Group: %s, Name: %s, Owner: %s", i, SGLib.address(SGList[i]), SGLib.group(SGList[i]), SGLib.name(SGList[i]), SGList[i]:owner() ) )    
     end
@@ -156,3 +166,4 @@ Gate:listenForCode(SearchIDC, Gate)
 --[[print("Testing")
 ChatLib.botSay("TAJG","TEST")
 ]]--
+ChatLib.botSay("TAJG","System Loaded, awaiting commands")
