@@ -50,6 +50,14 @@ if CLIENT then
         RenderLib.drawRectOutline(444, 150, 60, 60)
     end
 
+    function ChBox4(State)
+        if State == true then
+        RenderLib.setColor(255,0,0,255)
+        elseif State == false then
+        RenderLib.setColor(0,0,255,255)
+        end
+        RenderLib.drawRectOutline(514, 150, 60, 60)
+    end
 
     hook("render", "Displaying stuff", function()
     RenderLib.clear()
