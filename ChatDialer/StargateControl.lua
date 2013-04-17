@@ -17,7 +17,6 @@ local TimeLib = loadLibrary("time")
 local FindLib = loadLibrary("find")
 local NetLib = loadLibrary("net")
 local WireLib = loadLibrary("wire")
-WireLib.createInputs( { "HUDEntity" } , { "entity" } )
 local SGList = SGLib.getAllStargates()
 local Chip = EntLib.self()
 local Owner = Chip:owner()
@@ -28,6 +27,7 @@ local NameList = { "TAJG" , "Cookiemorph" , "Alex5511" } -- these should match u
 local ColourRed = { 255, 0, 0 }
 local Alex = FindLib.playerByName("Alex5511")
 local Cookiemorph = FindLib.playerByName("Cookiemorph")
+WireLib.createInputs( { "HUDEntity" } , { "entity" } )
 Gate:accessList( { Owner, Alex, Cookiemorph } )
 Gate:setLocal( false )
 
@@ -52,7 +52,7 @@ elseif Iris ~= nil then
 end
 
 local function SearchIDC(IDC)
-Verified = false
+	Verified = false -- a single '=' defines a variable, '==' mean "is equal to", '~=' not equal to.
 	for i=1, #IDCList do 
 		if IDC == IDCList[i] then
     			Verified = true
@@ -61,7 +61,7 @@ Verified = false
     				ChatLib.botSay("TAJG",{r=0,g=0,b=255}, "Hey master, you're back :) " )
     			else ChatLib.botSay("TAJG",{r=0,g=255,b=0}, string.format("Oh, hello %s, the iris is open :)", NameList[i] ) )
     			end
-			break
+			break -- ends the for loop early
 		end
 	end
 	if Verified == false then
@@ -74,13 +74,13 @@ Verified = false
 end
 
 function IrisSet(Params)
-    if Params == "close" and SGLib.irisActive(Iris) == false then
-        printColor( {r=255,g=255,b=0}, "Closing the iris" )
-		      SGLib.irisToggle(Iris)
-	   elseif Params == "open" and SGLib.irisActive(Iris) == true then 
-        printColor( {r=255,g=255,b=0}, "Opening the iris" )
-		      SGLib.irisToggle(Iris)
-    end
+	if Params == "close" and SGLib.irisActive(Iris) == false then
+    		printColor( {r=255,g=255,b=0}, "Closing the iris" )
+		SGLib.irisToggle(Iris)
+	elseif Params == "open" and SGLib.irisActive(Iris) == true then 
+        	printColor( {r=255,g=255,b=0}, "Opening the iris" )
+		SGLib.irisToggle(Iris)
+    	end
 end
 
 function inboundStuffToDo(SG)
