@@ -30,23 +30,24 @@ local Cookiemorph = FindLib.playerByName("Cookiemorph")
 WireLib.createInputs( { "HUDEntity" } , { "entity" } )
 Gate:accessList( { Owner, Alex, Cookiemorph } )
 Gate:setLocal( false )
+SGClass = Gate:class()
 
---[[ 
-	Currently doesnt work :/
-	Checks to see if the Gate is actually a gate
-	for i = 1, #SGList do
-		if Gate == SGList[i] then
-			return
-		elseif Gate ~= SGList[i] then
-			--error("You didnt spawn the chip on a Stargate!")
-			return
-		end
-	end
-]]--
+ 
+
+--Checks to see if the Gate is actually a gate
+
+if SGClass:sub(1,8) == "Stargate" then
+	printColor( {r=0,g=255,b=0}, "Good you spawned the chip on the gate")
+elseif Gate ~= SGList[i] then
+	printColor( {r=0,g=255,b=0}, "Please spawn it on the god damn gate! ¬_¬")
+	error("You didnt spawn the chip on a Stargate!")
+end
+
+
 
 if Iris == nil then
-    printColor({ r=255,g=0,b=0}, "Please Spawn an Iris on the gate!")
-    error("Please spawn an Iris on the gate!")
+	printColor({ r=255,g=0,b=0}, "Please Spawn an Iris on the gate!")
+	error("Please spawn an Iris on the gate!")
 elseif Iris ~= nil then
 	printColor({r=0,g=255,b=0}, "Good, you have an Iris")
 end
