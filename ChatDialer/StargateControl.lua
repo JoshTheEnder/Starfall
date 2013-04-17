@@ -2,13 +2,13 @@
 --@author TAJG
 
 --[[
-	################################################################################
-	#### Here it is, The Stargate Controller (ChatDialer V3). 					####
-	#### The goal for this chip was to be more stabel then versions 			####
+	####################################################################################
+	#### Here it is, The Stargate Controller (ChatDialer V3). 			####
+	#### The goal for this chip was to be more stabel then versions 		####
 	#### At the start of writing this chip i set myself a goal, to not use any	####
 	#### think hooks; using only the listener hook that Person8880 coded into 	####
-	#### the stargate library and the ChatLib.listen hook :)								####
-	################################################################################
+	#### the stargate library and the ChatLib.listen hook :)			####					####
+	####################################################################################
 ]]
 local EntLib = loadLibrary("ents")
 local SGLib = loadLibrary("stargate")
