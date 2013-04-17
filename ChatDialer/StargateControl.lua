@@ -64,13 +64,13 @@ Verified = false
 			break
 		end
 	end
-if Verified == false then
-ChatLib.botSay("TAJG", {r=255, g=0, b=0}, "Your IDC was not recognised!" )
-TimeLib.stimer(2, function()
-    Gate:close()
-end)
-end
-Verified = false
+	if Verified == false then
+		ChatLib.botSay("TAJG", {r=255, g=0, b=0}, "Your IDC was not recognised!" )
+		TimeLib.stimer(2, function()
+    			Gate:close()
+		end)
+	end
+	Verified = false
 end
 
 function IrisSet(Params)
