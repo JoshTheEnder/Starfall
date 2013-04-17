@@ -55,12 +55,12 @@ local function SearchIDC(IDC)
 Verified = false
 	for i=1, #IDCList do 
 		if IDC == IDCList[i] then
-    Verified = true
-    IrisSet("open")
-    if NameList[i] == "TAJG" then
-    ChatLib.botSay("TAJG",{r=0,g=0,b=255}, "Hey master, you're back :) " )
-    else ChatLib.botSay("TAJG",{r=0,g=255,b=0}, string.format("Oh, hello %s, the iris is open :)", NameList[i] ) )
-    end
+    			Verified = true
+    			IrisSet("open")
+    			if NameList[i] == "TAJG" then
+    				ChatLib.botSay("TAJG",{r=0,g=0,b=255}, "Hey master, you're back :) " )
+    			else ChatLib.botSay("TAJG",{r=0,g=255,b=0}, string.format("Oh, hello %s, the iris is open :)", NameList[i] ) )
+    			end
 			break
 		end
 	end
