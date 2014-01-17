@@ -64,7 +64,7 @@ elseif sg.irisActive(MrIris) == false then
 end
 
 
-if MSGE:inbound() == true then
+if MrGE:inbound() == true then
     if ( MrSGE:open() and sg.irisActive( MrIris ) ) == true then
         IrisRing:setAng( wire.ports.DialAng - Angle(0,90,0))
         IrisRing:setColor(255,255,255,255)
@@ -97,5 +97,5 @@ ring4:setAng(NewAng)
 ring:setPos(RPos)
 ring2:setPos(RPos)
 ring3:setPos(RPos)
-ring4:setPos(RPoos)
+ring4:setPos(RPos)
 end)
