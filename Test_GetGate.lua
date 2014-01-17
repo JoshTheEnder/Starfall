@@ -64,7 +64,7 @@ elseif sg.irisActive(MrIris) == false then
 end
 
 
-if MrSGE:inbound() == true then
+if MSGE:inbound() == true then
     if ( MrSGE:open() and sg.irisActive( MrIris ) ) == true then
         IrisRing:setAng( wire.ports.DialAng - Angle(0,90,0))
         IrisRing:setColor(255,255,255,255)
@@ -97,55 +97,5 @@ ring4:setAng(NewAng)
 ring:setPos(RPos)
 ring2:setPos(RPos)
 ring3:setPos(RPos)
-ring4:setPos(RPos)
+ring4:setPos(RPoos)
 end)
-
-
-
---[[
-hook("think","sewlkkj", function()
-    if sg.inbound(MrSGE) == true and sg.irisActive(MrIris) == false then
-        sg.irisToggle(MrIris)
-    elseif sg.inbound(MrSGE) == false and sg.irisActive(MrIris) == true then
-        sg.irisToggle(MrIris)
-    end
-end)
-
-Address = "SHAKUR"
-
---sg.dial(MrSGE, StrGts[9], fast)
-j = 0.575
-k = 2
-
-
-
-DHD = sg.dhd(MrSGE)
-
-    sg.dhdPressButton(DHD, "D")
-    time.stimer(j, function()
-        sg.dhdPressButton(DHD, "E")
-        time.stimer(j, function()
-            sg.dhdPressButton(DHD, "S")
-            time.stimer(j, function()
-                sg.dhdPressButton(DHD, "R")
-                time.stimer(j, function()
-                    sg.dhdPressButton(DHD, "T")
-                    time.stimer(j, function()
-                        sg.dhdPressButton(DHD, "P")
-                        time.stimer(j, function()
-                            sg.dhdPressButton(DHD, "U")
-                            time.stimer(j, function()
-                                sg.dhdPressButton(DHD, "@")
-                                time.stimer(j, function()
-                                    sg.dhdPressButton(DHD, "DIAL")
-                                end)
-                            end)
-                        end)
-                    end)
-                end)
-            end)
-        end)
-    end)
-
-
-]]--
